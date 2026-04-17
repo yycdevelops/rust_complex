@@ -1,0 +1,9 @@
+[package]
+name = "rust_complex"
+description = "Complex number implemention ported from C library written in Rust"
+keywords = ["mathematics", "numerics"]
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+num-traits = "0.2.19"
