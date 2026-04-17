@@ -1,12 +1,14 @@
 name: Test and Build 
 
-on: workflow_dispatch
+on:
+  push:
+  
 env:
   CARGO_TERM_COLOR: always
 
 jobs:
   test-ubuntu:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -20,7 +22,7 @@ jobs:
         run: cargo test
 
   test-macos:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -34,7 +36,7 @@ jobs:
         run: cargo test
       
   test-windows:
-    runs-on: windows-2019
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
