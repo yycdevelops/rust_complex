@@ -98,7 +98,7 @@ where
         + ops::Sub<Output = T>
         + ops::Add<Output = T>
         + ops::Div<Output = T>
-        + num_traits::MulAdd<Output = T>,
+        + num_traits::MulAdd<T, T, Output = T>,
 {
     type Output = Self;
 
@@ -113,7 +113,7 @@ where
 
 #[cfg(test)]
 mod test {
-    use crate::{Complex};
+    use crate::Complex;
 
     #[test]
     fn test_complex_add() {
@@ -150,6 +150,9 @@ mod test {
 
         let result = complex1 / complex2;
 
-        assert_eq!(result, Complex::new(0.6153846153846154, 0.07692307692307693));
+        assert_eq!(
+            result,
+            Complex::new(0.6153846153846154, 0.07692307692307693)
+        );
     }
 }

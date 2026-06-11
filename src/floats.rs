@@ -18,7 +18,7 @@ pub trait ComplexFloats<T> {
         T: Pow<T, Output = T>;
 }
 
-impl<T: Float + FloatConst> ComplexFloats<T> for Complex<T> {
+impl<T: Float + FloatConst + num_traits::MulAdd<T, T, Output = T>> ComplexFloats<T> for Complex<T> {
     fn square(&self) -> T {
         self.real() * self.real() + self.imag() * self.imag()
     }
@@ -43,7 +43,13 @@ impl<T: Float + FloatConst> ComplexFloats<T> for Complex<T> {
     }
 
     fn atan(&self) -> Self {
-        Complex::new(T::from(1.0).unwrap(), T::from(1.0).unwrap())
+        let i = Complex::new(T::zero(), T::one());
+        let numerator = i - *self;
+        let denominator = i + *self;
+        let ln_result = (numerator / denominator).log();
+        let i_times_ln = Complex::new(-ln_result.imag(), ln_result.real());
+        let two = T::from(2.0).unwrap();
+        Complex::new(i_times_ln.real() / two, i_times_ln.imag() / two)
     }
 
     fn atan2(&self) -> T {
@@ -72,10 +78,12 @@ impl<T: Float + FloatConst> ComplexFloats<T> for Complex<T> {
 
     #[allow(clippy::all)]
     fn log(&self) -> Self {
-        Complex::new(
-            self.magnitude().log(T::from(2.71828).unwrap()),
-            self.atan2(),
-        )
+        // Complex::new(
+        //     self.magnitude().log(T::from(2.71828).unwrap()),
+        //     self.atan2(),
+        // )
+        //
+        Complex::new(self.magnitude().ln(), self.atan2())
     }
 
     fn norm(&self) -> T {
@@ -97,7 +105,7 @@ impl<T: Float + FloatConst> ComplexFloats<T> for Complex<T> {
 
 #[cfg(test)]
 mod tests {
-    use crate::{Complex, floats::ComplexFloats};
+    use crate::{floats::ComplexFloats, Complex};
 
     #[test]
     fn test_complex_number_initialization_f32() {
@@ -157,7 +165,7 @@ mod tests {
     fn test_complex_log() {
         let complex = Complex::new(2.0, 3.0);
         let result = complex.log();
-        assert_eq!(result, Complex::new(1.282475541391427, 0.982793723247329));
+        assert_eq!(result, Complex::new(1.2824746787307684, 0.982793723247329));
     }
 
     #[test]
@@ -186,6 +194,7 @@ mod tests {
             }
         );
     }
+
     #[test]
     fn test_asin() {
         let complex = Complex::new(2.0, 3.0);
@@ -194,7 +203,7 @@ mod tests {
 
         assert_eq!(
             result,
-            Complex::new(-0.570652784321099, -1.9833883640481096)
+            Complex::new(-0.570652784321099, -1.9833870299165357)
         );
     }
 
